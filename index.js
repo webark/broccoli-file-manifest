@@ -1,0 +1,98 @@
+/* eslint-env node */
+'use strict';
+
+var Plugin = require('broccoli-plugin');
+var walkSync = require('walk-sync');
+var fs = require('fs');
+var FSTree = require('fs-tree-diff');
+var Promise = require('rsvp').Promise;
+var path = require('path');
+var os = require("os");
+
+module.exports = StyleManifest;
+
+StyleManifest.prototype = Object.create(Plugin.prototype);
+StyleManifest.prototype.constructor = StyleManifest;
+function StyleManifest(inputNode, options) {
+  options = options || {};
+  Plugin.call(this, [inputNode], {
+    annotation: options.annotation,
+    persistentOutput: true
+  });
+
+  this.currentTree = new FSTree();
+  this.styleFiles = {};
+  this.outputFileName = options.outputFileName;
+}
+
+StyleManifest.prototype.build = function() {
+  var srcDir = this.inputPaths[0];
+
+  var entries = walkSync.entries(srcDir);
+  var nextTree = new FSTree.fromEntries(entries, { sortAndExpand: true });
+  var currentTree = this.currentTree;
+
+  this.currentTree = nextTree;
+  var patches = currentTree.calculatePatch(nextTree);
+
+  return Promise.resolve()
+    .then(this.ganerateManifest.bind(this, patches, srcDir))
+    .then(this.ensureFile.bind(this));
+};
+
+StyleManifest.prototype.ganerateManifest = function(patches, srcDir) {
+  for (var i = 0; i < patches.length; i++) {
+    switch (patches[i][0]) {
+      case 'create':
+        this.addImport(patches[i][1], srcDir);
+        break;
+      case 'unlink':
+        this.removeImport(patches[i][1]);
+        break;
+    }
+  }
+
+  return this.makeManifest();
+}
+
+StyleManifest.prototype.addImport = function(stylePath) {
+  var extension = path.extname(stylePath);
+
+  this.styleFiles[extension] = this.styleFiles[extension] || {};
+  this.styleFiles[extension][stylePath] = '@import "' + stylePath + '"';
+}
+
+StyleManifest.prototype.removeImport = function(stylePath) {
+  var extension = path.extname(stylePath);
+
+  delete this.styleFiles[extension][stylePath];
+}
+
+StyleManifest.prototype.makeManifest = function() {
+  for (var extension in this.styleFiles) {
+    var output = '';
+    for (var file in this.styleFiles[extension]) {
+      output += this.styleFiles[extension][file] + ';' + os.EOL;
+    }
+    fs.writeFileSync(path.join(this.outputPath, this.outputFileName + extension), output);
+  }
+}
+
+const DUMMY_FILE_COMMENT = '\
+/* \n\
+  broccoli-style-manifest: This is an empty style mainfest file. \n\
+*/ \n';
+
+StyleManifest.prototype.ensureFile = function() {
+  if (Object.keys(this.styleFiles).length === 0) {
+    if (!this.dummyFile) {
+      this.dummyFile = path.join(this.outputPath, this.outputFileName + '.css');
+      fs.writeFileSync(this.dummyFile, DUMMY_FILE_COMMENT);
+    }
+  } else if (this.dummyFile) {
+    fs.unlinkSync(this.dummyFile);
+    delete this.dummyFile;
+  }
+
+  return true;
+}
