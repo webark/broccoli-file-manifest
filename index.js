@@ -22,7 +22,8 @@ function StyleManifest(inputNode, options) {
 
   this.currentTree = new FSTree();
   this.styleFiles = {};
-  this.outputFileName = options.outputFileName;
+  this.outputFileNameWithoutExtention = options.outputFileNameWithoutExtention;
+  this.defaultExtention = options.defaultExtention;
 }
 
 StyleManifest.prototype.build = function() {
@@ -86,7 +87,7 @@ const DUMMY_FILE_COMMENT = '\
 StyleManifest.prototype.ensureFile = function() {
   if (Object.keys(this.styleFiles).length === 0) {
     if (!this.dummyFile) {
-      this.dummyFile = path.join(this.outputPath, this.outputFileName + '.css');
+      this.dummyFile = path.join(this.outputPath, this.outputFileName + '.' + this.defaultExtention);
       fs.writeFileSync(this.dummyFile, DUMMY_FILE_COMMENT);
     }
   } else if (this.dummyFile) {
