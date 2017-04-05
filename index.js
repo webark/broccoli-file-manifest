@@ -23,7 +23,7 @@ function StyleManifest(inputNode, options) {
   this.currentTree = new FSTree();
   this.styleFiles = {};
   this.outputFileStem = options.outputFileNameWithoutExtension;
-  this.defaultExtension = options.defaultExtension;
+  this.defaultExtension = options.defaultExtension || 'css';
 }
 
 StyleManifest.prototype.build = function() {
