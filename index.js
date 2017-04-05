@@ -79,20 +79,20 @@ StyleManifest.prototype.makeManifest = function() {
   }
 }
 
-const DUMMY_FILE_COMMENT = '\
+const EMPTY_FILE_COMMENT = '\
 /* \n\
   broccoli-style-manifest: This is an empty style mainfest file. \n\
 */ \n';
 
 StyleManifest.prototype.ensureFile = function() {
   if (Object.keys(this.styleFiles).length === 0) {
-    if (!this.dummyFile) {
-      this.dummyFile = path.join(this.outputPath, this.outputFileStem + '.' + this.defaultExtension);
-      fs.writeFileSync(this.dummyFile, DUMMY_FILE_COMMENT);
+    if (!this.emptyFile) {
+      this.emptyFile = path.join(this.outputPath, this.outputFileStem + '.' + this.defaultExtension);
+      fs.writeFileSync(this.emptyFile, EMPTY_FILE_COMMENT);
     }
-  } else if (this.dummyFile) {
-    fs.unlinkSync(this.dummyFile);
-    delete this.dummyFile;
+  } else if (this.emptyFile) {
+    fs.unlinkSync(this.emptyFile);
+    delete this.emptyFile;
   }
 
   return true;
