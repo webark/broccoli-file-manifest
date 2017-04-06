@@ -80,9 +80,9 @@ StyleManifest.prototype.makeManifest = function() {
 }
 
 const EMPTY_FILE_COMMENT = '\
-/* \n\
-  broccoli-style-manifest: This is an empty style mainfest file. \n\
-*/ \n';
+/*\n\
+  broccoli-style-manifest: This is an empty style mainfest file.\n\
+*/\n';
 
 StyleManifest.prototype.ensureFile = function() {
   if (Object.keys(this.styleFiles).length === 0) {

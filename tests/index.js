@@ -147,4 +147,29 @@ describe("style-manifest", function() {
     });
   });
 
+
+
+  it("should handle a no styles", async function() {
+    input.write({
+      "src": {
+        "ui": {
+          "components": {
+            "todo-item": {},
+            "other-thing": {}
+          }
+        }
+      }
+    });
+
+    await output.build();
+
+    expect(output.read()).to.deep.equal({
+      "something.css": stripIndent`
+        /*
+          broccoli-style-manifest: This is an empty style mainfest file.
+        */
+      ` + os.EOL
+    });
+  });
+
 });
