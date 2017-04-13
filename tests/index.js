@@ -81,6 +81,7 @@ describe("style-manifest", function() {
     });
   });
 
+
   it("should handle a multiple style types", async function() {
     input.write({
       "src": {
@@ -148,7 +149,6 @@ describe("style-manifest", function() {
   });
 
 
-
   it("should handle a no styles", async function() {
     input.write({
       "src": {
@@ -171,5 +171,4 @@ describe("style-manifest", function() {
       ` + os.EOL
     });
   });
-
 });
