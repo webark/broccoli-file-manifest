@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.3.0"></a>
+# [1.3.0](https://github.com/webark/broccoli-style-manifest/compare/v1.2.2...v1.3.0) (2017-10-31)
+
+
+### Features
+
+* **better ordering:** updaing order so more deeply nested files come after thier ansestors ([f59ccea](https://github.com/webark/broccoli-style-manifest/commit/f59ccea))
+* **excluding directories:** we don't care about the directories so we are excluding them now ([b30050d](https://github.com/webark/broccoli-style-manifest/commit/b30050d))
+* **limit rebuild:** only rebuilding the manifest file if something has changed about it ([1f6ddaf](https://github.com/webark/broccoli-style-manifest/commit/1f6ddaf))
+
+
+
 <a name="1.2.2"></a>
 ## [1.2.2](https://github.com/webark/broccoli-style-manifest/compare/v1.2.1...v1.2.2) (2017-04-05)
 
