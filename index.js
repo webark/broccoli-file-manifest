@@ -27,8 +27,12 @@ function StyleManifest(inputNode, options) {
 }
 
 StyleManifest.prototype.build = function() {
-  var entries = walkSync.entries(this.inputPaths[0]);
-  var nextTree = new FSTree.fromEntries(entries, { sortAndExpand: true });
+  var entries = walkSync.entries(this.inputPaths[0], {
+    directories: false,
+  });
+  var nextTree = new FSTree.fromEntries(entries, {
+    sortAndExpand: true
+  });
   var currentTree = this.currentTree;
 
   this.currentTree = nextTree;
