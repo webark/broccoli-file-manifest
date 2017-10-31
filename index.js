@@ -34,9 +34,9 @@ StyleManifest.prototype.build = function() {
     sortAndExpand: true
   });
   var currentTree = this.currentTree;
+  var patches = currentTree.calculatePatch(nextTree);
 
   this.currentTree = nextTree;
-  var patches = currentTree.calculatePatch(nextTree);
 
   return Promise.resolve()
     .then(this.ganerateManifest.bind(this, patches))
