@@ -71,7 +71,7 @@ StyleManifest.prototype.makeManifest = function() {
   for (var extension in this.styleFiles) {
     var output = '';
     for (var file in this.styleFiles[extension]) {
-      output += this.styleFiles[extension][file] + ';' + os.EOL;
+      output = this.styleFiles[extension][file] + ';' + os.EOL + output;
     }
     fs.writeFileSync(path.join(this.outputPath, this.outputFileStem + extension), output);
   }

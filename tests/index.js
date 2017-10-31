@@ -46,8 +46,8 @@ describe("style-manifest", function() {
 
     expect(output.read()).to.deep.equal({
       "something.scss": stripIndent`
-        @import "src/ui/components/other-thing/style.scss";
         @import "src/ui/components/todo-item/style.scss";
+        @import "src/ui/components/other-thing/style.scss";
       ` + os.EOL
     });
   });
@@ -74,9 +74,9 @@ describe("style-manifest", function() {
 
     expect(output.read()).to.deep.equal({
       "something.scss": stripIndent`
-        @import "src/ui/components/other-thing/style.scss";
-        @import "src/ui/components/todo-item/other-style.scss";
         @import "src/ui/components/todo-item/style.scss";
+        @import "src/ui/components/todo-item/other-style.scss";
+        @import "src/ui/components/other-thing/style.scss";
       ` + os.EOL
     });
   });
@@ -126,24 +126,24 @@ describe("style-manifest", function() {
 
     expect(output.read()).to.deep.equal({
       "something.css": stripIndent`
-        @import "src/ui/components/other-plain-css-component/style.css";
         @import "src/ui/components/plain-css-component/style.css";
+        @import "src/ui/components/other-plain-css-component/style.css";
       ` + os.EOL,
       "something.less": stripIndent`
-        @import "src/ui/components/less-component/style.less";
         @import "src/ui/components/other-less-component/style.less";
+        @import "src/ui/components/less-component/style.less";
       ` + os.EOL,
       "something.sass": stripIndent`
-        @import "src/ui/components/other-sass-component/style.sass";
         @import "src/ui/components/sass-component/style.sass";
+        @import "src/ui/components/other-sass-component/style.sass";
       ` + os.EOL,
       "something.styl": stripIndent`
-        @import "src/ui/components/other-stylus-component/style.styl";
         @import "src/ui/components/stylus-component/style.styl";
+        @import "src/ui/components/other-stylus-component/style.styl";
       ` + os.EOL,
       "something.scss": stripIndent`
-        @import "src/ui/components/other-scss-component/style.scss";
         @import "src/ui/components/scss-component/style.scss";
+        @import "src/ui/components/other-scss-component/style.scss";
       ` + os.EOL
     });
   });
