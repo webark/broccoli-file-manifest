@@ -171,4 +171,49 @@ describe("style-manifest", function() {
       ` + os.EOL
     });
   });
+
+
+  it("should include top level items before nested children", async function() {
+    input.write({
+      "src": {
+        "ui": {
+          "components": {
+            "todo-item": {
+              "style.scss": '/* todo item styles */',
+              "nested-item": {
+                "style.scss": '/* todo item styles */',
+                "double-nested-item": {
+                  "style.scss": '/* todo item styles */',
+                },
+              },
+              "other-style.scss": '/* todo item other styles */'
+            },
+            "other-thing": {
+              "style.scss": '/* other thing styles */',
+              "nested-item": {
+                "style.scss": '/* todo item styles */',
+                "double-nested-item": {
+                  "style.scss": '/* todo item styles */',
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    await output.build();
+
+    expect(output.read()).to.deep.equal({
+      "something.scss": stripIndent`
+        @import "src/ui/components/todo-item/style.scss";
+        @import "src/ui/components/todo-item/other-style.scss";
+        @import "src/ui/components/todo-item/nested-item/style.scss";
+        @import "src/ui/components/todo-item/nested-item/double-nested-item/style.scss";
+        @import "src/ui/components/other-thing/style.scss";
+        @import "src/ui/components/other-thing/nested-item/style.scss";
+        @import "src/ui/components/other-thing/nested-item/double-nested-item/style.scss";
+      ` + os.EOL
+    });
+  });
 });

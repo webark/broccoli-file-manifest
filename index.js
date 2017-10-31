@@ -27,9 +27,7 @@ function StyleManifest(inputNode, options) {
 }
 
 StyleManifest.prototype.build = function() {
-  var srcDir = this.inputPaths[0];
-
-  var entries = walkSync.entries(srcDir);
+  var entries = walkSync.entries(this.inputPaths[0]);
   var nextTree = new FSTree.fromEntries(entries, { sortAndExpand: true });
   var currentTree = this.currentTree;
 
@@ -37,15 +35,15 @@ StyleManifest.prototype.build = function() {
   var patches = currentTree.calculatePatch(nextTree);
 
   return Promise.resolve()
-    .then(this.ganerateManifest.bind(this, patches, srcDir))
+    .then(this.ganerateManifest.bind(this, patches))
     .then(this.ensureFile.bind(this));
 };
 
-StyleManifest.prototype.ganerateManifest = function(patches, srcDir) {
+StyleManifest.prototype.ganerateManifest = function(patches) {
   for (var i = 0; i < patches.length; i++) {
     switch (patches[i][0]) {
       case 'create':
-        this.addImport(patches[i][1], srcDir);
+        this.addImport(patches[i][1]);
         break;
       case 'unlink':
         this.removeImport(patches[i][1]);
