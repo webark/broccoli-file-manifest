@@ -53,6 +53,57 @@ describe("style-manifest", function() {
   });
 
 
+  it("should not rebuild if nothing has changed", async function() {
+    input.write({
+      "src": {
+        "ui": {
+          "components": {
+            "todo-item": {
+              "style.scss": '/* todo item styles */'
+            },
+            "other-thing": {
+              "style.scss": '/* other thing styles */'
+            }
+          }
+        }
+      }
+    });
+
+    await output.build();
+
+    expect(output.read()).to.deep.equal({
+      "something.scss": stripIndent`
+        @import "src/ui/components/todo-item/style.scss";
+        @import "src/ui/components/other-thing/style.scss";
+      ` + os.EOL
+    });
+
+    await output.build();
+
+    expect(output.changes()).to.deep.equal({});
+
+    input.write({
+      "src": {
+        "ui": {
+          "components": {
+            "todo-item": {
+              "style.scss": null
+            }
+          }
+        }
+      }
+    });
+
+    await output.build();
+
+    expect(output.read()).to.deep.equal({
+      "something.scss": stripIndent`
+        @import "src/ui/components/other-thing/style.scss";
+      ` + os.EOL
+    });
+  });
+
+
   it("should handle a multiple style files in a direactory", async function() {
     input.write({
       "src": {
