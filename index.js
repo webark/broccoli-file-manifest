@@ -8,6 +8,8 @@ var FSTree = require('fs-tree-diff');
 var Promise = require('rsvp').Promise;
 var path = require('path');
 var os = require("os");
+var md5 = require('md5');
+
 
 module.exports = StyleManifest;
 
@@ -22,7 +24,7 @@ function StyleManifest(inputNode, options) {
 
   this.currentTree = new FSTree();
   this.styleFiles = {};
-  this.changedExtensions = [];
+  this.mainfestHash = '';
   this.outputFileStem = options.outputFileNameWithoutExtension;
   this.defaultExtension = options.defaultExtension || 'css';
 }
@@ -39,8 +41,8 @@ StyleManifest.prototype.build = function() {
 
   this.currentTree = nextTree;
 
-  return Promise.resolve()
-    .then(this.ganerateManifest.bind(this, patches))
+  return Promise.resolve(patches)
+    .then(this.ganerateManifest.bind(this))
     .then(this.ensureFile.bind(this));
 };
 
@@ -56,7 +58,9 @@ StyleManifest.prototype.ganerateManifest = function(patches) {
     }
   }
 
-  this.makeManifest();
+  if (this.hasManifestChanged()) {
+    this.makeManifest();
+  }
 }
 
 StyleManifest.prototype.addImport = function(stylePath) {
@@ -64,19 +68,24 @@ StyleManifest.prototype.addImport = function(stylePath) {
 
   this.styleFiles[extension] = this.styleFiles[extension] || {};
   this.styleFiles[extension][stylePath] = '@import "' + stylePath + '"';
-  this.changedExtensions.push(extension);
 }
 
 StyleManifest.prototype.removeImport = function(stylePath) {
   var extension = path.extname(stylePath);
 
   delete this.styleFiles[extension][stylePath];
-  this.changedExtensions.push(extension);
+}
+
+StyleManifest.prototype.hasManifestChanged = function() {
+  var newManifestHash = md5(JSON.stringify(this.styleFiles));
+  if (newManifestHash !== this.mainfestHash) {
+    this.mainfestHash = newManifestHash;
+    return true;
+  }
 }
 
 StyleManifest.prototype.makeManifest = function() {
-  while (this.changedExtensions.length) {
-    var extension = this.changedExtensions.pop()
+  for (var extension in this.styleFiles) {
     var output = this.generateManifestContent(this.styleFiles[extension]);
     fs.writeFileSync(this.filePath(extension), output);
   }
