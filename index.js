@@ -93,10 +93,27 @@ StyleManifest.prototype.makeManifest = function() {
 
 StyleManifest.prototype.generateManifestContent = function(fileList, output) {
   output = output || '';
-  for (var file in fileList) {
-    output = fileList[file] + ';' + os.EOL + output;
-  }
+  Object.keys(fileList).sort(this.fileSort).forEach(function(file) {
+    output+= fileList[file] + ';' + os.EOL;
+  });
   return output;
+}
+
+StyleManifest.prototype.fileSort = function(a, b) {
+  var sortNumber = 0;
+  var aLevels = a.split(path.sep).length;
+  var bLevels = b.split(path.sep).length;
+
+  if (aLevels < bLevels) {
+    sortNumber = -1;
+  } else if (aLevels > bLevels) {
+    sortNumber = 1;
+  } else if (a < b) {
+    sortNumber = -1;
+  } else if (a > b) {
+    sortNumber = 1;
+  }
+  return sortNumber;
 }
 
 StyleManifest.prototype.filePath = function(extension) {

@@ -46,8 +46,8 @@ describe("style-manifest", function() {
 
     expect(output.read()).to.deep.equal({
       "something.scss": stripIndent`
-        @import "src/ui/components/todo-item/style.scss";
         @import "src/ui/components/other-thing/style.scss";
+        @import "src/ui/components/todo-item/style.scss";
       ` + os.EOL
     });
   });
@@ -73,8 +73,8 @@ describe("style-manifest", function() {
 
     expect(output.read()).to.deep.equal({
       "something.scss": stripIndent`
-        @import "src/ui/components/todo-item/style.scss";
         @import "src/ui/components/other-thing/style.scss";
+        @import "src/ui/components/todo-item/style.scss";
       ` + os.EOL
     });
 
@@ -125,9 +125,9 @@ describe("style-manifest", function() {
 
     expect(output.read()).to.deep.equal({
       "something.scss": stripIndent`
-        @import "src/ui/components/todo-item/style.scss";
-        @import "src/ui/components/todo-item/other-style.scss";
         @import "src/ui/components/other-thing/style.scss";
+        @import "src/ui/components/todo-item/other-style.scss";
+        @import "src/ui/components/todo-item/style.scss";
       ` + os.EOL
     });
   });
@@ -177,24 +177,24 @@ describe("style-manifest", function() {
 
     expect(output.read()).to.deep.equal({
       "something.css": stripIndent`
-        @import "src/ui/components/plain-css-component/style.css";
         @import "src/ui/components/other-plain-css-component/style.css";
+        @import "src/ui/components/plain-css-component/style.css";
       ` + os.EOL,
       "something.less": stripIndent`
-        @import "src/ui/components/other-less-component/style.less";
         @import "src/ui/components/less-component/style.less";
+        @import "src/ui/components/other-less-component/style.less";
       ` + os.EOL,
       "something.sass": stripIndent`
-        @import "src/ui/components/sass-component/style.sass";
         @import "src/ui/components/other-sass-component/style.sass";
+        @import "src/ui/components/sass-component/style.sass";
       ` + os.EOL,
       "something.styl": stripIndent`
-        @import "src/ui/components/stylus-component/style.styl";
         @import "src/ui/components/other-stylus-component/style.styl";
+        @import "src/ui/components/stylus-component/style.styl";
       ` + os.EOL,
       "something.scss": stripIndent`
-        @import "src/ui/components/scss-component/style.scss";
         @import "src/ui/components/other-scss-component/style.scss";
+        @import "src/ui/components/scss-component/style.scss";
       ` + os.EOL
     });
   });
@@ -257,13 +257,52 @@ describe("style-manifest", function() {
 
     expect(output.read()).to.deep.equal({
       "something.scss": stripIndent`
-        @import "src/ui/components/todo-item/style.scss";
-        @import "src/ui/components/todo-item/other-style.scss";
-        @import "src/ui/components/todo-item/nested-item/style.scss";
-        @import "src/ui/components/todo-item/nested-item/double-nested-item/style.scss";
         @import "src/ui/components/other-thing/style.scss";
+        @import "src/ui/components/todo-item/other-style.scss";
+        @import "src/ui/components/todo-item/style.scss";
         @import "src/ui/components/other-thing/nested-item/style.scss";
+        @import "src/ui/components/todo-item/nested-item/style.scss";
         @import "src/ui/components/other-thing/nested-item/double-nested-item/style.scss";
+        @import "src/ui/components/todo-item/nested-item/double-nested-item/style.scss";
+      ` + os.EOL
+    });
+  });
+
+
+  it("should handle multiple nested items in outermost first, irrigardless of what the directory starts wtih it.", async function() {
+    input.write({
+      "attendees": {
+        "wizard": {
+          "-components": {
+            "finish-button": {
+              "style.scss": '/* todo item styles */',
+            },
+            "single-step": {
+              "style.scss": '/* todo item styles */',
+            },
+            "progress-indicator": {
+              "style.scss": '/* todo item styles */',
+            },
+          },
+          "avatar": {
+            "style.scss": '/* todo item styles */',
+          },
+          "style.scss": '/* todo item styles */',
+        },
+        "style.scss": '/* todo item styles */',
+      },
+    });
+
+    await output.build();
+
+    expect(output.read()).to.deep.equal({
+      "something.scss": stripIndent`
+        @import "attendees/style.scss";
+        @import "attendees/wizard/style.scss";
+        @import "attendees/wizard/avatar/style.scss";
+        @import "attendees/wizard/-components/finish-button/style.scss";
+        @import "attendees/wizard/-components/progress-indicator/style.scss";
+        @import "attendees/wizard/-components/single-step/style.scss";
       ` + os.EOL
     });
   });
