@@ -101,8 +101,8 @@ StyleManifest.prototype.generateManifestContent = function(fileList, output) {
 
 StyleManifest.prototype.fileSort = function(a, b) {
   var sortNumber = 0;
-  var aLevels = a.split(path.sep).length;
-  var bLevels = b.split(path.sep).length;
+  var aLevels = path.normalize(a).split(path.sep).length;
+  var bLevels = path.normalize(b).split(path.sep).length;
 
   if (aLevels < bLevels) {
     sortNumber = -1;
