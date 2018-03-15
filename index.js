@@ -1,14 +1,13 @@
 /* eslint-env node */
 'use strict';
 
-var Plugin = require('broccoli-plugin');
+var Plugin = require('broccoli-caching-writer');
 var walkSync = require('walk-sync');
 var fs = require('fs');
 var FSTree = require('fs-tree-diff');
 var Promise = require('rsvp').Promise;
 var path = require('path');
 var os = require("os");
-var md5 = require('md5');
 
 
 module.exports = StyleManifest;
@@ -58,9 +57,7 @@ StyleManifest.prototype.ganerateManifest = function(patches) {
     }
   }
 
-  if (this.hasManifestChanged()) {
-    this.makeManifest();
-  }
+  this.makeManifest();
 }
 
 StyleManifest.prototype.addImport = function(stylePath) {
@@ -74,14 +71,6 @@ StyleManifest.prototype.removeImport = function(stylePath) {
   var extension = path.extname(stylePath);
 
   delete this.styleFiles[extension][stylePath];
-}
-
-StyleManifest.prototype.hasManifestChanged = function() {
-  var newManifestHash = md5(JSON.stringify(this.styleFiles));
-  if (newManifestHash !== this.mainfestHash) {
-    this.mainfestHash = newManifestHash;
-    return true;
-  }
 }
 
 StyleManifest.prototype.makeManifest = function() {
