@@ -1,13 +1,24 @@
 module.exports = {
   root: true,
   parserOptions: {
-    ecmaVersion: 8,
-    sourceType: 'module'
+    ecmaVersion: 2018,
+    sourceType: 'script'
   },
   extends: 'eslint:recommended',
   env: {
-    browser: true
+    browser: false,
+    node: true,
+    es6: true
   },
-  rules: {
-  }
+  overrides: [
+    // mocha files
+    {
+      files: [
+        'tests/**/*.js'
+      ],
+      env: {
+        mocha
+      }
+    }
+  ]
 };

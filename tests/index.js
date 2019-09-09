@@ -1,33 +1,31 @@
-/* eslint-env node, mocha */
-'use strict';
-
 const expect = require('chai').expect;
 const { createBuilder, createTempDir } = require('broccoli-test-helper');
-const BroccoliStyleManifest = require('../index');
 const { stripIndent } = require('common-tags');
 const os = require('os');
 
-describe("style-manifest", function() {
-  let input;
-  let output;
-  let subject;
+const manifest = require('../src/index');
 
+describe("manifest", function() {
   beforeEach(async function() {
-    input = await createTempDir();
-    subject = new BroccoliStyleManifest(input.path(), {
-      outputFileNameWithoutExtension: 'something'
+    this.input = await createTempDir();
+    const subject = manifest(this.input.path(), {
+      outputFileNameWithoutExtension: 'something',
+      templates: {
+        default: '@import "<file-path>";',
+        js: 'require("<file-path>");',
+      },
     });
-    output = createBuilder(subject);
+    this.output = createBuilder(subject);
   });
 
   afterEach(async function() {
-    await input.dispose();
-    await output.dispose();
+    await this.input.dispose();
+    await this.output.dispose();
   });
 
 
-  it("should handle a single style type", async function() {
-    input.write({
+  it("should handle a single file extention", async function() {
+    this.input.write({
       "src": {
         "ui": {
           "components": {
@@ -42,19 +40,52 @@ describe("style-manifest", function() {
       }
     });
 
-    await output.build();
+    await this.output.build();
 
-    expect(output.read()).to.deep.equal({
+    expect(this.output.read()).to.deep.equal({
       "something.scss": stripIndent`
         @import "src/ui/components/other-thing/style.scss";
         @import "src/ui/components/todo-item/style.scss";
+      ` + os.EOL
+    });
+  });
+
+
+  it("should handle a different templates for different files extentions", async function() {
+    this.input.write({
+      "src": {
+        "ui": {
+          "components": {
+            "todo-item": {
+              "component.js": '/* todo item styles */',
+              "style.scss": '/* todo item styles */',
+            },
+            "other-thing": {
+              "component.js": '/* other thing styles */',
+              "style.scss": '/* todo item styles */',
+            }
+          }
+        }
+      }
+    });
+
+    await this.output.build();
+
+    expect(this.output.read()).to.deep.equal({
+      "something.scss": stripIndent`
+        @import "src/ui/components/other-thing/style.scss";
+        @import "src/ui/components/todo-item/style.scss";
+      ` + os.EOL,
+      "something.js": stripIndent`
+        require("src/ui/components/other-thing/component.js");
+        require("src/ui/components/todo-item/component.js");
       ` + os.EOL
     });
   });
 
 
   it("should not rebuild if nothing has changed", async function() {
-    input.write({
+    this.input.write({
       "src": {
         "ui": {
           "components": {
@@ -69,20 +100,20 @@ describe("style-manifest", function() {
       }
     });
 
-    await output.build();
+    await this.output.build();
 
-    expect(output.read()).to.deep.equal({
+    expect(this.output.read()).to.deep.equal({
       "something.scss": stripIndent`
         @import "src/ui/components/other-thing/style.scss";
         @import "src/ui/components/todo-item/style.scss";
       ` + os.EOL
     });
 
-    await output.build();
+    await this.output.build();
 
-    expect(output.changes()).to.deep.equal({});
+    expect(this.output.changes()).to.deep.equal({});
 
-    input.write({
+    this.input.write({
       "src": {
         "ui": {
           "components": {
@@ -94,9 +125,9 @@ describe("style-manifest", function() {
       }
     });
 
-    await output.build();
+    await this.output.build();
 
-    expect(output.read()).to.deep.equal({
+    expect(this.output.read()).to.deep.equal({
       "something.scss": stripIndent`
         @import "src/ui/components/other-thing/style.scss";
       ` + os.EOL
@@ -104,8 +135,8 @@ describe("style-manifest", function() {
   });
 
 
-  it("should handle a multiple style files in a direactory", async function() {
-    input.write({
+  it("should handle a multiple files in a direactory", async function() {
+    this.input.write({
       "src": {
         "ui": {
           "components": {
@@ -121,9 +152,9 @@ describe("style-manifest", function() {
       }
     });
 
-    await output.build();
+    await this.output.build();
 
-    expect(output.read()).to.deep.equal({
+    expect(this.output.read()).to.deep.equal({
       "something.scss": stripIndent`
         @import "src/ui/components/other-thing/style.scss";
         @import "src/ui/components/todo-item/other-style.scss";
@@ -133,8 +164,8 @@ describe("style-manifest", function() {
   });
 
 
-  it("should handle a multiple style types", async function() {
-    input.write({
+  it("should handle a multiple file extentions", async function() {
+    this.input.write({
       "src": {
         "ui": {
           "components": {
@@ -173,9 +204,9 @@ describe("style-manifest", function() {
       }
     });
 
-    await output.build();
+    await this.output.build();
 
-    expect(output.read()).to.deep.equal({
+    expect(this.output.read()).to.deep.equal({
       "something.css": stripIndent`
         @import "src/ui/components/other-plain-css-component/style.css";
         @import "src/ui/components/plain-css-component/style.css";
@@ -200,8 +231,8 @@ describe("style-manifest", function() {
   });
 
 
-  it("should handle a no styles", async function() {
-    input.write({
+  it("should handle a no files", async function() {
+    this.input.write({
       "src": {
         "ui": {
           "components": {
@@ -212,20 +243,14 @@ describe("style-manifest", function() {
       }
     });
 
-    await output.build();
+    await this.output.build();
 
-    expect(output.read()).to.deep.equal({
-      "something.css": stripIndent`
-        /*
-          broccoli-style-manifest: This is an empty style mainfest file.
-        */
-      ` + os.EOL
-    });
+    expect(this.output.read()).to.deep.equal({});
   });
 
 
   it("should include top level items before nested children", async function() {
-    input.write({
+    this.input.write({
       "src": {
         "ui": {
           "components": {
@@ -253,9 +278,9 @@ describe("style-manifest", function() {
       },
     });
 
-    await output.build();
+    await this.output.build();
 
-    expect(output.read()).to.deep.equal({
+    expect(this.output.read()).to.deep.equal({
       "something.scss": stripIndent`
         @import "src/ui/components/other-thing/style.scss";
         @import "src/ui/components/todo-item/other-style.scss";
@@ -270,7 +295,7 @@ describe("style-manifest", function() {
 
 
   it("should handle multiple nested items in outermost first, irrigardless of what the directory starts wtih it.", async function() {
-    input.write({
+    this.input.write({
       "attendees": {
         "wizard": {
           "-components": {
@@ -293,9 +318,9 @@ describe("style-manifest", function() {
       },
     });
 
-    await output.build();
+    await this.output.build();
 
-    expect(output.read()).to.deep.equal({
+    expect(this.output.read()).to.deep.equal({
       "something.scss": stripIndent`
         @import "attendees/style.scss";
         @import "attendees/wizard/style.scss";

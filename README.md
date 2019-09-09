@@ -1,1 +1,1 @@
-# broccoli-style-manifest
+# broccoli-file-manifest

@@ -1,4 +1,3 @@
 *
-!lib/**/*.js
-!index.js
+!src/**/*.js
 !LICENSE
