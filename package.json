@@ -1,6 +1,6 @@
 {
   "name": "broccoli-file-manifest",
-  "version": "1.5.2",
+  "version": "2.0.0",
   "description": "Broccoli plugin that takes creates an import mainfest file of differnt files.",
   "main": "src/index.js",
   "repository": "github:webark/broccoli-style-manifest",

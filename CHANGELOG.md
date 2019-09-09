@@ -1,6 +1,17 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [2.0.0](https://github.com/webark/broccoli-style-manifest/compare/v1.5.2...v2.0.0) (2019-09-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* **modernizing:** now needs node 10 and no longer creates an empty file
+
+### Features
+
+* **modernizing:** split out tree walker and converted to class based ([abb610f](https://github.com/webark/broccoli-style-manifest/commit/abb610f))
 
 <a name="1.5.2"></a>
 ## [1.5.2](https://github.com/webark/broccoli-style-manifest/compare/v1.5.1...v1.5.2) (2018-03-15)
