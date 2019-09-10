@@ -1,15 +1,23 @@
 const path = require('path');
 
 module.exports = class Defaults {
-  static templates = {
-    default: '@import "<file-path>";',
+  static get templates() {
+    return {
+      default: '@import "<file-path>";',
+    };
   }
 
-  static outputFileStem = 'manifest'
+  static get outputFileStem() {
+    return 'manifest';
+  }
 
-  static extension = 'css'
+  static get extension() {
+    return 'css';
+  }
 
-  static emptyFile = ''
+  static get emptyFile() {
+    return '';
+  }
 
   static sortMethod(a, b) {
     const sortNumber = 0;
