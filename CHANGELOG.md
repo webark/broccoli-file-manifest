@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.1](https://github.com/webark/broccoli-style-manifest/compare/v2.0.0...v2.0.1) (2019-09-10)
+
+
+### Bug Fixes
+
+* **class field support:** adding support for node 10 ([f285326](https://github.com/webark/broccoli-style-manifest/commit/f285326))
+
 ## [2.0.0](https://github.com/webark/broccoli-style-manifest/compare/v1.5.2...v2.0.0) (2019-09-09)
 
 
