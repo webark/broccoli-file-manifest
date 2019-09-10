@@ -14,9 +14,9 @@ class Manifest extends TreeWalker {
     });
 
     Defaults.defineOptions(this, options);
-  }
 
-  files = {}
+    this.files = {};
+  }
 
   create(filePath) {
     const extension = path.extname(filePath).slice(1);
